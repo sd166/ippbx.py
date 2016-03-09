@@ -199,4 +199,3 @@ for result in result_set:
 with open(asteriskcfgfilename, 'w') as f:
 	f.write(asteriskcfg)
 
-
