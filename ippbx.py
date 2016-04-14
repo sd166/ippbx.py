@@ -33,7 +33,7 @@ def genuserpass(phonenum):
 	"generate simple user password"
 	userpasstrail =  int(userpassbasenum) - int(phonenum)
 	userpass = userpassprefix + str(userpasstrail)[1:4]
-	return userpass 
+	return userpass
 
 def asteriskuserconfig(phonenum, username):
 	"generate sip user config for Asterisk"
@@ -43,6 +43,7 @@ def asteriskuserconfig(phonenum, username):
 	userconfig += "host=dynamic" + "\n"
 	userconfig += "username=" + phonenum + "\n"
 	userconfig += "secret=" + genuserpass(phonenum) + "\n"
+	userconfig += "fullname=" + phonenum + "\n"
 	userconfig += "callerid=" + username + "\n"
 	userconfig += "context=" + asteriskusercontext  + "\n"
 	userconfig += "transport=udp,tcp" + "\n"
@@ -63,7 +64,7 @@ def phoneconfig(phonetype, phonehwmac, phonenum, username):
 	if phonetype == "1":
 		cfgdata = ""
 		filename = phonehwmac + ".cfg"
-		
+
 		cfgdata += "[ account ]" + "\n"
 		cfgdata += "path = /config/voip/sipAccount0.cfg" + "\n"
 		cfgdata += "Enable = 1" + "\n"
@@ -76,7 +77,7 @@ def phoneconfig(phonetype, phonehwmac, phonenum, username):
 		cfgdata += "SIPServerPort = 5060" + "\n"
 		cfgdata += "Transport = 0" + "\n"
 		cfgdata += "" + "\n"
-		
+
 		if DEBUG:
 			print "Generating phone config: "
 			print "phonetype: " + phonetype
@@ -88,7 +89,7 @@ def phoneconfig(phonetype, phonehwmac, phonenum, username):
 	elif phonetype == "2":
                 cfgdata = ""
                 filename = phonehwmac + ".cfg"
-                
+
                 cfgdata += "[ account ]" + "\n"
                 cfgdata += "path = /config/voip/sipAccount0.cfg" + "\n"
                 cfgdata += "Enable = 1" + "\n"
@@ -101,7 +102,7 @@ def phoneconfig(phonetype, phonehwmac, phonenum, username):
                 cfgdata += "SIPServerPort = 5060" + "\n"
                 cfgdata += "Transport = 0" + "\n"
                 cfgdata += "" + "\n"
-                
+
                 if DEBUG:
                         print "Generating phone config: "
                         print "phonetype: " + phonetype
@@ -113,7 +114,7 @@ def phoneconfig(phonetype, phonehwmac, phonenum, username):
 	elif phonetype == "5":
 		cfgdata = ""
 		filename = phonehwmac + ".cfg"
-		
+
 		cfgdata += "#!version:1.0.0.1" + "\n"
 		cfgdata += "account.1.enable = 1" + "\n"
 		cfgdata += "account.1.label = " + str(phonenum) + " - " + str(username) + "\n"
@@ -123,8 +124,8 @@ def phoneconfig(phonetype, phonehwmac, phonenum, username):
 		cfgdata += "account.1.password = " + genuserpass(phonenum) + "\n"
 		cfgdata += "account.1.sip_server.1.address = " + asteriskserveraddress + "\n"
 		cfgdata += "account.1.sip_server.1.port = 5060" + "\n"
-		cfgdata += "" + "\n" 
-		
+		cfgdata += "" + "\n"
+
 		if DEBUG:
                         print "Generating phone config: "
                         print "phonetype: " + phonetype
@@ -172,7 +173,7 @@ for result in result_set:
 	data = result[0][1]
 	if DEBUG:
 		print data
-	
+
 	phonenum = data['ipPhone'][0]
 	username = data['displayName'][0]
 	try:
@@ -198,4 +199,3 @@ for result in result_set:
 
 with open(asteriskcfgfilename, 'w') as f:
 	f.write(asteriskcfg)
-
