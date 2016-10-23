@@ -77,13 +77,13 @@ def phoneconfig(phonetype, phonehwmac, phonenum, username):
 		cfgdata += "" + "\n"
 
 		if DEBUG:
-			print "Generating phone config: "
-			print "phonetype: " + phonetype
-			print "phonehwmac: " + phonehwmac
-			print "phonenum: " + phonenum
-			print "username: " + username
-			print filename
-			print cfgdata
+			print("Generating phone config: ")
+			print("phonetype: " + phonetype)
+			print("phonehwmac: " + phonehwmac)
+			print("phonenum: " + phonenum)
+			print("username: " + username)
+			print(filename)
+			print(cfgdata)
 	elif phonetype == "2":
                 cfgdata = ""
                 filename = phonehwmac + ".cfg"
@@ -125,15 +125,15 @@ def phoneconfig(phonetype, phonehwmac, phonenum, username):
 		cfgdata += "" + "\n"
 
 		if DEBUG:
-                        print "Generating phone config: "
-                        print "phonetype: " + phonetype
-                        print "phonehwmac: " + phonehwmac
-                        print "phonenum: " + phonenum
-                        print "username: " + username
-			print filename
-			print cfgdata
+                        print("Generating phone config: ")
+                        print("phonetype: " + phonetype)
+                        print("phonehwmac: " + phonehwmac)
+                        print("phonenum: " + phonenum)
+                        print("username: " + username)
+			print(filename)
+			print(cfgdata)
 	else:
-		print "Unknown phone type"
+		print("Unknown phone type")
 		sys.exit(1)
 	with open(tftpdir + filename, 'w') as f:
 		f.write(cfgdata)
