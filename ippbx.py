@@ -4,6 +4,7 @@
 import ConfigParser
 import ldap
 import sys
+import crypt
 
 DEBUG = False
 
@@ -15,8 +16,7 @@ basedn = config.get('ldap', 'basedn')
 searchuserdn = config.get('ldap', 'searchuserdn')
 searchuserpw = config.get('ldap', 'searchuserpw')
 
-userpassprefix = config.get('user', 'passprefix')
-userpassbasenum = config.get('user', 'passbasenum')
+userpasssalt = config.get('user', 'passsalt')
 
 asteriskusercontext = config.get('asterisk', 'usercontext')
 asteriskserveraddress = config.get('asterisk', 'serveraddress')
@@ -31,9 +31,7 @@ ldapattrs = ['employeeID', 'ipPhone', 'displayName']
 # Functions
 def genuserpass(phonenum):
 	"generate simple user password"
-	userpasstrail =  int(userpassbasenum) - int(phonenum)
-	userpass = userpassprefix + str(userpasstrail)[1:4]
-	return userpass
+	return crypt.crypt(phonenum, salt)
 
 def asteriskuserconfig(phonenum, username):
 	"generate sip user config for Asterisk"
