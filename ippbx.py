@@ -9,7 +9,7 @@ import crypt
 
 __author__ = "Denis Gubanov"
 __copyright__ = "Copyright 2016"
-#__credits__ = ["Denis Gubanov"]
+# __credits__ = ["Denis Gubanov"]
 __license__ = "GPL-3.0"
 __vcs_id__ = '$Id$'
 __version__ = "1.0.0"
