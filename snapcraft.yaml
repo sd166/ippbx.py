@@ -1,0 +1,21 @@
+name: ippbx.py
+version: "2.0.1"
+summary: Script for asterisk and Yealink configuration
+description: TBD
+confinement: strict
+
+apps:
+  ippbx.py:
+    command: ippbx.py
+
+parts:
+  ippbx.py:
+    plugin: python
+    source: .
+    python-packages:
+      - ldap3
+    stage-packages:
+      - python3
+  ippbx.py-copy:
+    plugin: dump
+    source: .
