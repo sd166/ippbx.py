@@ -1,5 +1,7 @@
 # ippbx.py
 
+[![Build Status](https://travis-ci.org/v12aml/ippbx.py.svg?branch=master)](https://travis-ci.org/v12aml/ippbx.py)
+
 ## Eng
 small script for Yealink SIP Phones, Asterisk and ActiveDirectory (LDAP)
 
@@ -11,4 +13,3 @@ IP phone type and hw MAC stored in 'employeeID' field in MS AD (format like 5:00
 MAC-адрес телефона и его тип помещаются в поле 'employeeID'. Формат такой ТИП_ТЕЛЕФОНА:MAC_адрес, где тип телефона:
  * 1 старая прошивка yealink
  * 5 новая прошивка yealink
-
