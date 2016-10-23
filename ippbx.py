@@ -6,6 +6,16 @@ import ldap
 import sys
 import crypt
 
+
+__author__ = "Denis Gubanov"
+__copyright__ = "Copyright 2016"
+__credits__ = ["Denis Gubanov"]
+__license__ = "GPL-3.0"
+__maintainer__ = "Denis Gubanov"
+__email__ = "v12aml@gmail.com"
+__status__ = "Production"
+
+
 DEBUG = False
 
 config = ConfigParser.RawConfigParser()
