@@ -124,7 +124,7 @@ def phoneconfig(phonetype, phonehwmac, phonenum, username):
         cfgdata += "account.1.user_name = " + str(phonenum) + "\n"
         cfgdata += "account.1.password = " + genuserpass(phonenum) + "\n"
         cfgdata += "account.1.sip_server.1.address = " + \
-			asteriskserveraddress + "\n"
+            asteriskserveraddress + "\n"
         cfgdata += "account.1.sip_server.1.port = 5060" + "\n"
         cfgdata += "" + "\n"
 
