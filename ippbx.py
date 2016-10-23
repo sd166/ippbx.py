@@ -44,7 +44,7 @@ def asteriskuserconfig(phonenum, username):
 	userconfig += "fullname=" + phonenum + "\n"
 	userconfig += "callerid=" + username + "\n"
 	userconfig += "context=" + asteriskusercontext  + "\n"
-	userconfig += "transport=udp,tcp" + "\n"
+	userconfig += "transport=udp" + "\n"
 	userconfig += "disallow=all" + "\n"
 	userconfig += "allow=g729,ulaw,alaw,g722" + "\n"
 	userconfig += "canreinvite=no" + "\n"
