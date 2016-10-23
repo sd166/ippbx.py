@@ -102,13 +102,13 @@ def phoneconfig(phonetype, phonehwmac, phonenum, username):
                 cfgdata += "" + "\n"
 
                 if DEBUG:
-                        print "Generating phone config: "
-                        print "phonetype: " + phonetype
-                        print "phonehwmac: " + phonehwmac
-                        print "phonenum: " + phonenum
-                        print "username: " + username
-                        print filename
-                        print cfgdata
+                        print("Generating phone config: ")
+                        print("phonetype: " + phonetype)
+                        print("phonehwmac: " + phonehwmac)
+                        print("phonenum: " + phonenum)
+                        print("username: " + username)
+                        print(filename)
+                        print(cfgdata)
 	elif phonetype == "5":
 		cfgdata = ""
 		filename = phonehwmac + ".cfg"
@@ -140,10 +140,10 @@ def phoneconfig(phonetype, phonehwmac, phonenum, username):
 
 
 if DEBUG:
-	print "LDAP host: " + ldaphost
-	print "LDAP baseDN: " + basedn
-	print "LDAP search user: " + searchuserdn
-	print "LDAP password: " + searchuserpw
+	print("LDAP host: " + ldaphost)
+	print("LDAP baseDN: " + basedn)
+	print("LDAP search user: " + searchuserdn)
+	print("LDAP password: " + searchuserpw)
 
 
 connection = ldap.initialize(ldaphost)
@@ -161,16 +161,16 @@ while True:
 			result_set.append(result_data)
 
 if DEBUG:
-	print "Search results:"
-	print result_set
-	print type(result_set)
+	print("Search results:")
+	print(result_set)
+	print(type(result_set))
 
 asteriskcfg = ""
 
 for result in result_set:
 	data = result[0][1]
 	if DEBUG:
-		print data
+		print(data)
 
 	phonenum = data['ipPhone'][0]
 	username = data['displayName'][0]
@@ -183,14 +183,14 @@ for result in result_set:
 		phonetype = None
 		phonehwmac = None
 	if DEBUG:
-		print "Num: " + str(phonenum)
-		print "User: " + str(username)
-		print "PhoneID: " + str(phoneid)
-		print "Phone type: " + str(phonetype)
-		print "Phone MAC: " + str(phonehwmac)
-		print "User password: " + genuserpass(phonenum)
-		print "Asterisk config:"
-		print asteriskuserconfig(phonenum, username)
+		print("Num: " + str(phonenum))
+		print("User: " + str(username))
+		print("PhoneID: " + str(phoneid))
+		print("Phone type: " + str(phonetype))
+		print("Phone MAC: " + str(phonehwmac))
+		print("User password: " + genuserpass(phonenum))
+		print("Asterisk config:")
+		print(asteriskuserconfig(phonenum, username))
 	if phonetype:
 		phoneconfig(phonetype, phonehwmac, phonenum, username)
 	asteriskcfg += asteriskuserconfig(phonenum, username)
