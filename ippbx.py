@@ -28,8 +28,6 @@ basedn = config.get('ldap', 'basedn')
 searchuserdn = config.get('ldap', 'searchuserdn')
 searchuserpw = config.get('ldap', 'searchuserpw')
 
-userpasssalt = config.get('user', 'passsalt')
-
 asteriskusercontext = config.get('asterisk', 'usercontext')
 asteriskserveraddress = config.get('asterisk', 'serveraddress')
 asteriskcfgfilename = config.get('asterisk', 'filename')
@@ -43,6 +41,7 @@ ldapattrs = ['employeeID', 'ipPhone', 'displayName']
 # Functions
 def genuserpass(phonenum):
     "generate simple user password"
+    salt = config.get('user', 'passsalt')
     return crypt.crypt(phonenum, salt)
 
 
