@@ -1,6 +1,9 @@
 # ippbx.py
 
-[![Build Status](https://travis-ci.org/v12aml/ippbx.py.svg?branch=master)](https://travis-ci.org/v12aml/ippbx.py)
+[![Build Status](https://travis-ci.org/v12aml/ippbx.py.svg?branch=dev)](https://travis-ci.org/v12aml/ippbx.py)
+
+irc://chat.freenode.net/#ippbx.py
+
 
 ## Eng
 small script for Yealink SIP Phones, Asterisk and ActiveDirectory (LDAP)
