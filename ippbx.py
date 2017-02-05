@@ -40,7 +40,7 @@ tftp_dir = config.get('tftp', 'dir')
 
 phone_num_prefix = config.get('asterisk', 'phone_num_prefix')
 ldap_filter = "(&(objectClass=person)(ipPhone=" + phone_num_prefix + "*))"
-ldap_attrs = ['employeeID', 'ipPhone', 'displayName']
+ldap_attrs = ['sn', 'employeeID', 'ipPhone', 'displayName']
 
 
 # Functions
