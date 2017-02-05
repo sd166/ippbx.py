@@ -250,9 +250,9 @@ connection.search(search_base, ldap_filter, attributes=ldap_attrs)
 
 # Processing data
 for entry in connection.entries:
-    phone_num = str(entry.ipPhone)
+    phone_num = "{}".format(entry.ipPhone)
     log_debug(phone_num)
-    user_name = entry.displayName
+    user_name = "{}".format(entry.displayName)
     log_debug(user_name)
     phone_id = "{}".format(entry.employeeID)
     log_debug(phone_id)
