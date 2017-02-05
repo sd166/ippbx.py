@@ -254,7 +254,7 @@ for entry in connection.entries:
     log_debug(phone_num)
     user_name = entry.displayName
     log_debug(user_name)
-    phone_id = entry.employeeID
+    phone_id = str(entry.employeeID)
     log_debug(phone_id)
 
     # Generating asterisk config (SIP or/and PJSIP)
