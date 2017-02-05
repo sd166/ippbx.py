@@ -231,10 +231,7 @@ log_debug(connection.usage)
 
 # Fetching data
 log_debug("Fetching data")
-connection.search(
-    search_base,
-    ldap_filter,
-    attributes=ldap_attrs)
+connection.search(search_base, ldap_filter, attributes=ldap_attrs)
 
 # Processing data
 for entry in connection.entries:
