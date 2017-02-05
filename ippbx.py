@@ -224,7 +224,7 @@ connection = ldap3.Connection(
     authentication=ldap3.NTLM)
 
 connection.bind()
-connection.start_tls()
+# connection.start_tls()
 
 log_debug(connection.usage)
 
