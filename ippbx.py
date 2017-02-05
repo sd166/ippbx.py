@@ -61,7 +61,7 @@ def gen_user_pass(phonenum):
 
 def asterisk_sip_user_config(phonenum, username):
     """generate sip user config for Asterisk"""
-    log_debug("called func asterisk_sip_user_config({}, {}})".format(
+    log_debug("called func asterisk_sip_user_config({}, {})".format(
         phonenum,
         username))
     log_debug("Generating SIP config for {} {}".format(phonenum, username))
@@ -95,7 +95,7 @@ def asterisk_sip_user_config(phonenum, username):
 
 def asterisk_pjsip_user_config(phonenum, username):
     """generate sip user config for Asterisk"""
-    log_debug("called func asterisk_pjsip_user_config({}, {}})".format(
+    log_debug("called func asterisk_pjsip_user_config({}, {})".format(
         phonenum,
         username))
     log_debug("Generating PJSIP config for {} {}".format(phonenum, username))
