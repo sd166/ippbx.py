@@ -226,6 +226,8 @@ connection = ldap3.Connection(
 connection.bind()
 connection.start_tls()
 
+log_debug(connection.usage)
+
 
 # Fetching data
 log_debug("Fetching data")
@@ -236,6 +238,7 @@ connection.search(
 
 # Processing data
 for entry in connection.entries:
+    log_debug(entry.sn)
     log_debug(entry.displayName)
     log_debug(entry.ipPhone)
     log_debug(entry.employeeID)
