@@ -255,7 +255,6 @@ for entry in connection.entries:
         phone_type = phone_id[:1]
         phone_hwmac = str(phone_id[2:]).lower()
     except:
-        phone_id = None
         phone_type = None
         phone_hwmac = None
         log_debug("Wrong format of employeeID LDAP field")
