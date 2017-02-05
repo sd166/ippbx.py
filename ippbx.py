@@ -21,7 +21,7 @@ __status__ = "Develompent"
 config = configparser.RawConfigParser()
 config.read('/etc/ippbx.cfg')
 
-debug_enabled = config.get('DEBUG', 'debug')
+debug_enabled = config.get('DEFAULT', 'debug')
 
 ldap_host = config.get('ldap', 'host')
 base_dn = config.get('ldap', 'base_dn')
