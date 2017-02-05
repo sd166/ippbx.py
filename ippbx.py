@@ -54,12 +54,16 @@ def log_debug(msg):
 
 def gen_user_pass(phonenum):
     """generate simple user password"""
+    log_debug("called func gen_user_pass({})".format(phonenum))
     salt = config.get('user', 'pass_salt')
     return crypt.crypt(str(phonenum), salt=salt)
 
 
 def asterisk_sip_user_config(phonenum, username):
     """generate sip user config for Asterisk"""
+    log_debug("called func asterisk_sip_user_config({}, {}})".format(
+        phonenum,
+        username))
     log_debug("Generating SIP config for {} {}".format(phonenum, username))
     user_pass = gen_user_pass(phonenum)
     user_config = ""
@@ -91,6 +95,9 @@ def asterisk_sip_user_config(phonenum, username):
 
 def asterisk_pjsip_user_config(phonenum, username):
     """generate sip user config for Asterisk"""
+    log_debug("called func asterisk_pjsip_user_config({}, {}})".format(
+        phonenum,
+        username))
     log_debug("Generating PJSIP config for {} {}".format(phonenum, username))
     user_pass = gen_user_pass(phonenum)
     user_config = ";{} <{}> {}".format(phonenum, username, user_pass)
@@ -128,6 +135,11 @@ def asterisk_pjsip_user_config(phonenum, username):
 
 def yealink_phone_config(phonetype, phonehwmac, phonenum, username):
     """generate and write phone cfg file"""
+    log_debug("called func yealink_phone_config({}, {}, {}, {})".format(
+        phonetype,
+        phonehwmac,
+        phonenum,
+        username))
     if phonetype == "1":
         cfgdata = ""
         filename = phonehwmac + ".cfg"
