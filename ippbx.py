@@ -26,6 +26,7 @@ debug_enabled = config.get('DEFAULT', 'debug')
 ldap_host = config.get('ldap', 'host')
 search_base = config.get('ldap', 'search_base')
 search_user_name = config.get('ldap', 'search_user_name')
+search_user_domain = config.get('ldap', 'search_user_domain')
 search_user_pw = config.get('ldap', 'search_user_pw')
 
 asterisk_user_context = config.get('asterisk', 'user_context')
@@ -220,7 +221,7 @@ ldap_server = ldap3.Server(
 
 connection = ldap3.Connection(
     ldap_server,
-    user=search_user_name,
+    user="{}\\{}".format(search_user_domain, search_user_name),
     password=search_user_pw,
     authentication=ldap3.NTLM)
 
