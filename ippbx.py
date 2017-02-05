@@ -1,32 +1,32 @@
-#!/usr/bin/python
+#!/usr/bin/env python3
 # -*- coding: utf-8 -*-
 
-import ConfigParser
-import ldap
+import configparser
+import ldap3
 import sys
 import crypt
 
 
 __author__ = "Denis Gubanov"
-__copyright__ = "Copyright 2016"
+__copyright__ = "Copyright 2017"
 # __credits__ = ["Denis Gubanov"]
 __license__ = "GPL-3.0"
 __vcs_id__ = '$Id$'
-__version__ = "1.0.0"
+__version__ = "2.0.0"
 __maintainer__ = "Denis Gubanov"
 __email__ = "v12aml@gmail.com"
-__status__ = "Production"
+__status__ = "Develompent"
 
 
-DEBUG = False
+config = configparser.RawConfigParser()
+config.read('/etc/ippbx.cfg')
 
-config = ConfigParser.RawConfigParser()
-config.read('ippbx.cfg')
+debug_enabled = config.get('DEBUG', 'debug')
 
-ldaphost = config.get('ldap', 'host')
-basedn = config.get('ldap', 'basedn')
-searchuserdn = config.get('ldap', 'searchuserdn')
-searchuserpw = config.get('ldap', 'searchuserpw')
+ldap_host = config.get('ldap', 'host')
+base_dn = config.get('ldap', 'base_dn')
+search_user_name = config.get('ldap', 'search_user_name')
+search_user_pw = config.get('ldap', 'search_user_pw')
 
 asteriskusercontext = config.get('asterisk', 'usercontext')
 asteriskserveraddress = config.get('asterisk', 'serveraddress')
@@ -39,14 +39,20 @@ ldapattrs = ['employeeID', 'ipPhone', 'displayName']
 
 
 # Functions
+def log_debug(msg):
+    """Debug log"""
+    if debug_enabled == "True" or "true":
+        print(msg)
+
+
 def genuserpass(phonenum):
-    "generate simple user password"
-    salt = config.get('user', 'passsalt')
+    """generate simple user password"""
+    salt = config.get('user', 'pass_salt')
     return crypt.crypt(phonenum, salt)
 
 
 def asteriskuserconfig(phonenum, username):
-    "generate sip user config for Asterisk"
+    """generate sip user config for Asterisk"""
     userconfig = ""
     userconfig += "[" + phonenum + "]" + "\n"
     userconfig += "type=friend" + "\n"
@@ -71,7 +77,7 @@ def asteriskuserconfig(phonenum, username):
 
 
 def phoneconfig(phonetype, phonehwmac, phonenum, username):
-    "generate and write phone cfg file"
+    """generate and write phone cfg file"""
     if phonetype == "1":
         cfgdata = ""
         filename = phonehwmac + ".cfg"
@@ -89,14 +95,13 @@ def phoneconfig(phonetype, phonehwmac, phonenum, username):
         cfgdata += "Transport = 0" + "\n"
         cfgdata += "" + "\n"
 
-        if DEBUG:
-            print("Generating phone config: ")
-            print("phonetype: " + phonetype)
-            print("phonehwmac: " + phonehwmac)
-            print("phonenum: " + phonenum)
-            print("username: " + username)
-            print(filename)
-            print(cfgdata)
+        log_debug("Generating phone config: ")
+        log_debug("phonetype: " + phonetype)
+        log_debug("phonehwmac: " + phonehwmac)
+        log_debug("phonenum: " + phonenum)
+        log_debug("username: " + username)
+        log_debug(filename)
+        log_debug(cfgdata)
     elif phonetype == "2":
         cfgdata = ""
         filename = phonehwmac + ".cfg"
@@ -114,14 +119,13 @@ def phoneconfig(phonetype, phonehwmac, phonenum, username):
         cfgdata += "Transport = 0" + "\n"
         cfgdata += "" + "\n"
 
-        if DEBUG:
-            print("Generating phone config: ")
-            print("phonetype: " + phonetype)
-            print("phonehwmac: " + phonehwmac)
-            print("phonenum: " + phonenum)
-            print("username: " + username)
-            print(filename)
-            print(cfgdata)
+        log_debug("Generating phone config: ")
+        log_debug("phonetype: " + phonetype)
+        log_debug("phonehwmac: " + phonehwmac)
+        log_debug("phonenum: " + phonenum)
+        log_debug("username: " + username)
+        log_debug(filename)
+        log_debug(cfgdata)
     elif phonetype == "5":
         cfgdata = ""
         filename = phonehwmac + ".cfg"
@@ -139,14 +143,13 @@ def phoneconfig(phonetype, phonehwmac, phonenum, username):
         cfgdata += "account.1.sip_server.1.port = 5060" + "\n"
         cfgdata += "" + "\n"
 
-        if DEBUG:
-            print("Generating phone config: ")
-            print("phonetype: " + phonetype)
-            print("phonehwmac: " + phonehwmac)
-            print("phonenum: " + phonenum)
-            print("username: " + username)
-            print(filename)
-            print(cfgdata)
+        log_debug("Generating phone config: ")
+        log_debug("phonetype: " + phonetype)
+        log_debug("phonehwmac: " + phonehwmac)
+        log_debug("phonenum: " + phonenum)
+        log_debug("username: " + username)
+        log_debug(filename)
+        log_debug(cfgdata)
     else:
         print("Unknown phone type")
         sys.exit(1)
@@ -154,18 +157,19 @@ def phoneconfig(phonetype, phonehwmac, phonenum, username):
         f.write(cfgdata)
 
 
-if DEBUG:
-    print("LDAP host: " + ldaphost)
-    print("LDAP baseDN: " + basedn)
-    print("LDAP search user: " + searchuserdn)
-    print("LDAP password: " + searchuserpw)
+log_debug("LDAP host: " + ldap_host)
+log_debug("LDAP base_dn: " + base_dn)
+log_debug("LDAP search user: " + search_user_name)
+log_debug("LDAP password: " + search_user_pw)
 
-
-connection = ldap.initialize(ldaphost)
-connection.set_option(ldap.OPT_REFERRALS, 0)
-connection.simple_bind_s(searchuserdn, searchuserpw)
+ldap_server = ldap3.Server(ldap_host, get_info=ldap3.ALL)
+connection = ldap3.Connection(
+    ldap_server,
+    user=search_user_name,
+    password=search_user_pw,
+    authentication=ldap3.NTLM)
 ldap_result_id = connection.search(
-    basedn, ldap.SCOPE_SUBTREE, ldapfilter, ldapattrs)
+    base_dn, ldap3.SCOPE_SUBTREE, ldapfilter, ldapattrs)
 result_set = []
 
 while True:
@@ -173,20 +177,19 @@ while True:
     if (result_data == []):
         break
     else:
-        if result_type == ldap.RES_SEARCH_ENTRY:
+        if result_type == ldap3.RES_SEARCH_ENTRY:
             result_set.append(result_data)
 
-if DEBUG:
-    print("Search results:")
-    print(result_set)
-    print(type(result_set))
+
+log_debug("Search results:")
+log_debug(result_set)
+log_debug(type(result_set))
 
 asteriskcfg = ""
 
 for result in result_set:
     data = result[0][1]
-    if DEBUG:
-        print(data)
+    log_debug(data)
 
     phonenum = data['ipPhone'][0]
     username = data['displayName'][0]
@@ -198,18 +201,20 @@ for result in result_set:
         phoneid = None
         phonetype = None
         phonehwmac = None
-    if DEBUG:
-        print("Num: " + str(phonenum))
-        print("User: " + str(username))
-        print("PhoneID: " + str(phoneid))
-        print("Phone type: " + str(phonetype))
-        print("Phone MAC: " + str(phonehwmac))
-        print("User password: " + genuserpass(phonenum))
-        print("Asterisk config:")
-        print(asteriskuserconfig(phonenum, username))
+        log_debug("Num: " + str(phonenum))
+        log_debug("User: " + str(username))
+        log_debug("PhoneID: " + str(phoneid))
+        log_debug("Phone type: " + str(phonetype))
+        log_debug("Phone MAC: " + str(phonehwmac))
+        log_debug("User password: " + genuserpass(phonenum))
+        log_debug("Asterisk config:")
+        log_debug(asteriskuserconfig(phonenum, username))
     if phonetype:
         phoneconfig(phonetype, phonehwmac, phonenum, username)
     asteriskcfg += asteriskuserconfig(phonenum, username)
 
 with open(asteriskcfgfilename, 'w') as f:
     f.write(asteriskcfg)
+
+
+# EOF
