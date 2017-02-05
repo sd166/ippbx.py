@@ -265,7 +265,7 @@ for entry in connection.entries:
     # Generating Yelink phone config
     try:
         phone_type = phone_id[:1]
-        phone_hwmac = str(phone_id[2:]).lower()
+        phone_hwmac = phone_id[2:].lower()
     except:
         phone_type = None
         phone_hwmac = None
