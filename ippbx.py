@@ -24,7 +24,7 @@ config.read('/etc/ippbx.cfg')
 debug_enabled = config.get('DEFAULT', 'debug')
 
 ldap_host = config.get('ldap', 'host')
-base_dn = config.get('ldap', 'base_dn')
+search_base = config.get('ldap', 'search_base')
 search_user_name = config.get('ldap', 'search_user_name')
 search_user_pw = config.get('ldap', 'search_user_pw')
 
@@ -206,7 +206,7 @@ def yealink_phone_config(phonetype, phonehwmac, phonenum, username):
 
 # Main body
 log_debug("LDAP host: " + ldap_host)
-log_debug("LDAP base_dn: " + base_dn)
+log_debug("LDAP search_base: " + search_base)
 log_debug("LDAP search user: " + search_user_name)
 log_debug("LDAP filter: " + ldap_filter)
 log_debug("LDAP attributes: " + str(ldap_attrs))
@@ -224,7 +224,7 @@ connection = ldap3.Connection(
     authentication=ldap3.NTLM)
 
 connection.bind()
-# connection.start_tls()
+connection.start_tls()
 
 log_debug(connection.usage)
 
@@ -232,7 +232,7 @@ log_debug(connection.usage)
 # Fetching data
 log_debug("Fetching data")
 connection.search(
-    base_dn,
+    search_base,
     ldap_filter,
     attributes=ldap_attrs)
 
