@@ -208,7 +208,8 @@ def yealink_phone_config(phonetype, phonehwmac, phonenum, username):
 log_debug("LDAP host: " + ldap_host)
 log_debug("LDAP base_dn: " + base_dn)
 log_debug("LDAP search user: " + search_user_name)
-log_debug("LDAP password: " + search_user_pw)
+log_debug("LDAP filter: " + ldap_filter)
+log_debug("LDAP attributes: " + ldap_attrs)
 
 # Connecting to LDAP
 log_debug("Connecting to LDAP server")
@@ -224,8 +225,6 @@ connection = ldap3.Connection(
 
 connection.bind()
 connection.start_tls()
-
-log_debug(connection.extend.standard.who_am_i())
 
 
 # Fetching data
