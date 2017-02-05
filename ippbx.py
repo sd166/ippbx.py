@@ -264,6 +264,8 @@ for entry in connection.entries:
             entry.ipPhone,
             entry.displayName)
     log_debug("We are done with {}".format(entry.displayName))
+    log_debug(connection.usage)
+log_debug(connection.usage)
 
 
 # EOF
