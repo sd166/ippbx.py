@@ -214,13 +214,13 @@ log_debug("LDAP attributes: " + str(ldap_attrs))
 # Connecting to LDAP
 log_debug("Connecting to LDAP server")
 ldap_server = ldap3.Server(
-    ldap_host,
+    str(ldap_host),
     get_info=ldap3.ALL)
 
 connection = ldap3.Connection(
     ldap_server,
-    user=search_user_name,
-    password=search_user_pw,
+    user=str(search_user_name),
+    password=str(search_user_pw),
     authentication=ldap3.NTLM)
 
 connection.bind()
