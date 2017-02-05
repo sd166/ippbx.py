@@ -225,6 +225,9 @@ connection = ldap3.Connection(
 connection.bind()
 connection.start_tls()
 
+log_debug(connection.extend.standard.who_am_i())
+
+
 # Fetching data
 log_debug("Fetching data")
 connection.search(
