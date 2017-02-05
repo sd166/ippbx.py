@@ -1,77 +1,130 @@
-#!/usr/bin/python
+#!/usr/bin/env python3
 # -*- coding: utf-8 -*-
 
-import ConfigParser
-import ldap
+import configparser
+import ldap3
 import sys
 import crypt
 
 
 __author__ = "Denis Gubanov"
-__copyright__ = "Copyright 2016"
+__copyright__ = "Copyright 2017"
 # __credits__ = ["Denis Gubanov"]
 __license__ = "GPL-3.0"
 __vcs_id__ = '$Id$'
-__version__ = "1.0.0"
+__version__ = "2.0.0"
 __maintainer__ = "Denis Gubanov"
 __email__ = "v12aml@gmail.com"
-__status__ = "Production"
+__status__ = "Develompent"
 
 
-DEBUG = False
+config = configparser.RawConfigParser()
+config.read('/etc/ippbx.cfg')
 
-config = ConfigParser.RawConfigParser()
-config.read('ippbx.cfg')
+debug_enabled = config.get('DEBUG', 'debug')
 
-ldaphost = config.get('ldap', 'host')
-basedn = config.get('ldap', 'basedn')
-searchuserdn = config.get('ldap', 'searchuserdn')
-searchuserpw = config.get('ldap', 'searchuserpw')
+ldap_host = config.get('ldap', 'host')
+base_dn = config.get('ldap', 'base_dn')
+search_user_name = config.get('ldap', 'search_user_name')
+search_user_pw = config.get('ldap', 'search_user_pw')
 
-asteriskusercontext = config.get('asterisk', 'usercontext')
-asteriskserveraddress = config.get('asterisk', 'serveraddress')
-asteriskcfgfilename = config.get('asterisk', 'filename')
+asterisk_user_context = config.get('asterisk', 'user_context')
+asterisk_server_address = config.get('asterisk', 'server_address')
+asterisk_pjsip_enables = config.get('asterisk', 'pjsip_enabled')
+asterisk_pjsip_conf_dir = config.get('asterisk', 'pjsip_conf_dir')
+asterisk_sip_enables = config.get('asterisk', 'sip_enabled')
+asterisk_sip_conf_dir = config.get('asterisk', 'sip_conf_dir')
+asterisk_codecs_allow = config.get('asterisk', 'codecs_allow')
 
-tftpdir = config.get('tftp', 'dir')
+tftp_dir = config.get('tftp', 'dir')
 
-ldapfilter = '(&(objectClass=person)(ipPhone=*))'
-ldapattrs = ['employeeID', 'ipPhone', 'displayName']
+phone_num_prefix = config.get('asterisk', 'phone_num_prefix')
+ldap_filter = "(&(objectClass=person)(ipPhone=" + phone_num_prefix + "*))"
+ldap_attrs = ['employeeID', 'ipPhone', 'displayName']
 
 
 # Functions
+def log_debug(msg):
+    """Debug log"""
+    if debug_enabled == "True" or "true":
+        print(msg)
+
+
 def genuserpass(phonenum):
-    "generate simple user password"
-    salt = config.get('user', 'passsalt')
+    """generate simple user password"""
+    salt = config.get('user', 'pass_salt')
     return crypt.crypt(phonenum, salt)
 
 
-def asteriskuserconfig(phonenum, username):
-    "generate sip user config for Asterisk"
-    userconfig = ""
-    userconfig += "[" + phonenum + "]" + "\n"
-    userconfig += "type=friend" + "\n"
-    userconfig += "host=dynamic" + "\n"
-    userconfig += "username=" + phonenum + "\n"
-    userconfig += "secret=" + genuserpass(phonenum) + "\n"
-    userconfig += "fullname=" + phonenum + "\n"
-    userconfig += "callerid=" + username + "\n"
-    userconfig += "context=" + asteriskusercontext + "\n"
-    userconfig += "transport=udp" + "\n"
-    userconfig += "disallow=all" + "\n"
-    userconfig += "allow=g729,ulaw,alaw,g722" + "\n"
-    userconfig += "canreinvite=no" + "\n"
-    userconfig += "nat=yes" + "\n"
-    userconfig += "qualify=yes" + "\n"
-    userconfig += "hassip=yes" + "\n"
-    userconfig += "hasiax=no" + "\n"
-    userconfig += "hash323=no" + "\n"
-    userconfig += "hasmanager=no" + "\n"
-    userconfig += "\n"
-    return userconfig
+def asterisk_sip_user_config(phonenum, username):
+    """generate sip user config for Asterisk"""
+    log_debug("Generating SIP config for {} {}".format(phonenum, username))
+    user_config = ""
+    user_config += "[" + phonenum + "]" + "\n"
+    user_config += "type=friend" + "\n"
+    user_config += "host=dynamic" + "\n"
+    user_config += "username=" + phonenum + "\n"
+    user_config += "secret=" + genuserpass(phonenum) + "\n"
+    user_config += "fullname=" + phonenum + "\n"
+    user_config += "callerid=" + username + "\n"
+    user_config += "context=" + asterisk_user_context + "\n"
+    user_config += "transport=udp" + "\n"
+    user_config += "disallow=all" + "\n"
+    user_config += "allow=" + asterisk_codecs_allow + "\n"
+    user_config += "canreinvite=no" + "\n"
+    user_config += "nat=yes" + "\n"
+    user_config += "qualify=yes" + "\n"
+    user_config += "hassip=yes" + "\n"
+    user_config += "hasiax=no" + "\n"
+    user_config += "hash323=no" + "\n"
+    user_config += "hasmanager=no" + "\n"
+    user_config += "\n"
+    cfg_file_name = asterisk_sip_conf_dir + "user" + username + ".conf"
+    with open(cfg_file_name, 'w') as f:
+        f.write(user_config)
+    log_debug(cfg_file_name)
+    log_debug(user_config)
 
 
-def phoneconfig(phonetype, phonehwmac, phonenum, username):
-    "generate and write phone cfg file"
+def asterisk_pjsip_user_config(phonenum, username):
+    """generate sip user config for Asterisk"""
+    log_debug("Generating PJSIP config for {} {}".format(phonenum, username))
+    user_pass = genuserpass(phonenum)
+    user_config = ";{} <{}> {}".format(phonenum, username, user_pass)
+    user_config += "\n"
+    user_config += "[{}]".format(phonenum) + "\n"
+    user_config += "type=auth" + "\n"
+    user_config += "auth_type=userpass" + "\n"
+    user_config += "username={}".format(phonenum) + "\n"
+    user_config += "password={}".format(user_pass) + "\n"
+    user_config += "" + "\n"
+    user_config += "[{}]".format(phonenum) + "\n"
+    user_config += "type=aor" + "\n"
+    user_config += "max_contacts=1" + "\n"
+    user_config += "remove_existing=yes" + "\n"
+    user_config += "qualify_frequency=5" + "\n"
+    user_config += "" + "\n"
+    user_config += "[{}]".format(phonenum) + "\n"
+    user_config += "type=endpoint" + "\n"
+    user_config += "context=" + asterisk_user_context + "\n"
+    user_config += "disallow=all" + "\n"
+    user_config += "allow=" + asterisk_codecs_allow + "\n"
+    user_config += "aors={}".format(phonenum) + "\n"
+    user_config += "auth={}".format(phonenum) + "\n"
+    user_config += "rtp_symmetric=yes" + "\n"
+    user_config += "rtp_ipv6=yes" + "\n"
+    user_config += "rewrite_contact=yes" + "\n"
+    user_config += "send_rpid=yes" + "\n"
+    user_config += "" + "\n"
+    cfg_file_name = asterisk_pjsip_conf_dir + "user" + username + ".conf"
+    with open(cfg_file_name, 'w') as f:
+        f.write(user_config)
+    log_debug(cfg_file_name)
+    log_debug(user_config)
+
+
+def yealink_phone_config(phonetype, phonehwmac, phonenum, username):
+    """generate and write phone cfg file"""
     if phonetype == "1":
         cfgdata = ""
         filename = phonehwmac + ".cfg"
@@ -84,19 +137,18 @@ def phoneconfig(phonetype, phonehwmac, phonenum, username):
         cfgdata += "AuthName = " + str(phonenum) + "\n"
         cfgdata += "UserName = " + str(phonenum) + "\n"
         cfgdata += "password = " + genuserpass(phonenum) + "\n"
-        cfgdata += "SIPServerHost = " + asteriskserveraddress + "\n"
+        cfgdata += "SIPServerHost = " + asterisk_server_address + "\n"
         cfgdata += "SIPServerPort = 5060" + "\n"
         cfgdata += "Transport = 0" + "\n"
         cfgdata += "" + "\n"
 
-        if DEBUG:
-            print("Generating phone config: ")
-            print("phonetype: " + phonetype)
-            print("phonehwmac: " + phonehwmac)
-            print("phonenum: " + phonenum)
-            print("username: " + username)
-            print(filename)
-            print(cfgdata)
+        log_debug("Generating phone config: ")
+        log_debug("phonetype: " + phonetype)
+        log_debug("phonehwmac: " + phonehwmac)
+        log_debug("phonenum: " + phonenum)
+        log_debug("username: " + username)
+        log_debug(filename)
+        log_debug(cfgdata)
     elif phonetype == "2":
         cfgdata = ""
         filename = phonehwmac + ".cfg"
@@ -109,19 +161,18 @@ def phoneconfig(phonetype, phonehwmac, phonenum, username):
         cfgdata += "AuthName = " + str(phonenum) + "\n"
         cfgdata += "UserName = " + str(phonenum) + "\n"
         cfgdata += "password = " + genuserpass(phonenum) + "\n"
-        cfgdata += "SIPServerHost = " + asteriskserveraddress + "\n"
+        cfgdata += "SIPServerHost = " + asterisk_server_address + "\n"
         cfgdata += "SIPServerPort = 5060" + "\n"
         cfgdata += "Transport = 0" + "\n"
         cfgdata += "" + "\n"
 
-        if DEBUG:
-            print("Generating phone config: ")
-            print("phonetype: " + phonetype)
-            print("phonehwmac: " + phonehwmac)
-            print("phonenum: " + phonenum)
-            print("username: " + username)
-            print(filename)
-            print(cfgdata)
+        log_debug("Generating phone config: ")
+        log_debug("phonetype: " + phonetype)
+        log_debug("phonehwmac: " + phonehwmac)
+        log_debug("phonenum: " + phonenum)
+        log_debug("username: " + username)
+        log_debug(filename)
+        log_debug(cfgdata)
     elif phonetype == "5":
         cfgdata = ""
         filename = phonehwmac + ".cfg"
@@ -135,81 +186,79 @@ def phoneconfig(phonetype, phonehwmac, phonenum, username):
         cfgdata += "account.1.user_name = " + str(phonenum) + "\n"
         cfgdata += "account.1.password = " + genuserpass(phonenum) + "\n"
         cfgdata += "account.1.sip_server.1.address = " + \
-            asteriskserveraddress + "\n"
+            asterisk_server_address + "\n"
         cfgdata += "account.1.sip_server.1.port = 5060" + "\n"
         cfgdata += "" + "\n"
 
-        if DEBUG:
-            print("Generating phone config: ")
-            print("phonetype: " + phonetype)
-            print("phonehwmac: " + phonehwmac)
-            print("phonenum: " + phonenum)
-            print("username: " + username)
-            print(filename)
-            print(cfgdata)
+        log_debug("Generating phone config: ")
+        log_debug("phonetype: " + phonetype)
+        log_debug("phonehwmac: " + phonehwmac)
+        log_debug("phonenum: " + phonenum)
+        log_debug("username: " + username)
+        log_debug(filename)
+        log_debug(cfgdata)
     else:
         print("Unknown phone type")
         sys.exit(1)
-    with open(tftpdir + filename, 'w') as f:
+    with open(tftp_dir + filename, 'w') as f:
         f.write(cfgdata)
 
 
-if DEBUG:
-    print("LDAP host: " + ldaphost)
-    print("LDAP baseDN: " + basedn)
-    print("LDAP search user: " + searchuserdn)
-    print("LDAP password: " + searchuserpw)
+# Main body
+log_debug("LDAP host: " + ldap_host)
+log_debug("LDAP base_dn: " + base_dn)
+log_debug("LDAP search user: " + search_user_name)
+log_debug("LDAP password: " + search_user_pw)
 
+# Connecting to LDAP
+log_debug("Connecting to LDAP server")
+ldap_server = ldap3.Server(
+    ldap_host,
+    get_info=ldap3.ALL)
 
-connection = ldap.initialize(ldaphost)
-connection.set_option(ldap.OPT_REFERRALS, 0)
-connection.simple_bind_s(searchuserdn, searchuserpw)
-ldap_result_id = connection.search(
-    basedn, ldap.SCOPE_SUBTREE, ldapfilter, ldapattrs)
-result_set = []
+connection = ldap3.Connection(
+    ldap_server,
+    user=search_user_name,
+    password=search_user_pw,
+    authentication=ldap3.NTLM)
 
-while True:
-    result_type, result_data = connection.result(ldap_result_id, 0)
-    if (result_data == []):
-        break
-    else:
-        if result_type == ldap.RES_SEARCH_ENTRY:
-            result_set.append(result_data)
+connection.bind()
+connection.start_tls()
 
-if DEBUG:
-    print("Search results:")
-    print(result_set)
-    print(type(result_set))
+# Fetching data
+log_debug("Fetching data")
+connection.search(
+    base_dn,
+    ldap_filter,
+    attributes=ldap_attrs)
 
-asteriskcfg = ""
-
-for result in result_set:
-    data = result[0][1]
-    if DEBUG:
-        print(data)
-
-    phonenum = data['ipPhone'][0]
-    username = data['displayName'][0]
+# Processing data
+for entry in connection.entries:
+    log_debug(entry.displayName)
+    log_debug(entry.ipPhone)
+    log_debug(entry.employeeID)
+    # Generating asterisk config (SIP or/and PJSIP)
+    if asterisk_pjsip_enables == "True" or "true":
+        asterisk_pjsip_user_config(entry.ipPhone, entry.displayName)
+    if asterisk_sip_enables == "True" or "true":
+        asterisk_sip_user_config(entry.ipPhone, entry.displayName)
+    # Generating Yelink phone config
     try:
-        phoneid = data['employeeID'][0]
-        phonetype = phoneid[:1]
-        phonehwmac = str(phoneid[2:]).lower()
+        phone_id = entry.employeeID
+        phone_type = phone_id[:1]
+        phone_hwmac = str(phone_id[2:]).lower()
     except:
-        phoneid = None
-        phonetype = None
-        phonehwmac = None
-    if DEBUG:
-        print("Num: " + str(phonenum))
-        print("User: " + str(username))
-        print("PhoneID: " + str(phoneid))
-        print("Phone type: " + str(phonetype))
-        print("Phone MAC: " + str(phonehwmac))
-        print("User password: " + genuserpass(phonenum))
-        print("Asterisk config:")
-        print(asteriskuserconfig(phonenum, username))
-    if phonetype:
-        phoneconfig(phonetype, phonehwmac, phonenum, username)
-    asteriskcfg += asteriskuserconfig(phonenum, username)
+        phone_id = None
+        phone_type = None
+        phone_hwmac = None
+        log_debug("Wrong format of employeeID LDAP field")
+    if phone_type:
+        yealink_phone_config(
+            phone_type,
+            phone_hwmac,
+            entry.ipPhone,
+            entry.displayName)
+    log_debug("We are done with {}".format(entry.displayName))
 
-with open(asteriskcfgfilename, 'w') as f:
-    f.write(asteriskcfg)
+
+# EOF
