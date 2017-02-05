@@ -86,7 +86,7 @@ def asterisk_sip_user_config(phonenum, username):
     user_config += "hash323=no\n"
     user_config += "hasmanager=no\n"
     user_config += "\n"
-    cfg_file_name = "{}/{}.conf".format(asterisk_sip_conf_dir, phonenum)
+    cfg_file_name = "user{}/{}.conf".format(asterisk_sip_conf_dir, phonenum)
     with open(cfg_file_name, 'w') as f:
         f.write(user_config)
     log_debug(cfg_file_name)
@@ -126,7 +126,7 @@ def asterisk_pjsip_user_config(phonenum, username):
     user_config += "rewrite_contact=yes\n"
     user_config += "send_rpid=yes\n"
     user_config += "\n"
-    cfg_file_name = "{}/{}.conf".format(asterisk_pjsip_conf_dir, phonenum)
+    cfg_file_name = "user{}/{}.conf".format(asterisk_pjsip_conf_dir, phonenum)
     with open(cfg_file_name, 'w') as f:
         f.write(user_config)
     log_debug(cfg_file_name)
