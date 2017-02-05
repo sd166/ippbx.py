@@ -40,7 +40,7 @@ tftp_dir = config.get('tftp', 'dir')
 
 phone_num_prefix = config.get('asterisk', 'phone_num_prefix')
 ldap_filter = "(&(objectClass=person)(ipPhone=" + phone_num_prefix + "*))"
-ldap_attrs = ['sn', 'employeeID', 'ipPhone', 'displayName']
+ldap_attrs = ['employeeID', 'ipPhone', 'displayName']
 
 
 # Functions
@@ -50,10 +50,10 @@ def log_debug(msg):
         print(msg)
 
 
-def genuserpass(phonenum):
+def gen_user_pass(phonenum):
     """generate simple user password"""
     salt = config.get('user', 'pass_salt')
-    return crypt.crypt(phonenum, salt)
+    return crypt.crypt(phonenum, salt=salt)
 
 
 def asterisk_sip_user_config(phonenum, username):
@@ -64,7 +64,7 @@ def asterisk_sip_user_config(phonenum, username):
     user_config += "type=friend" + "\n"
     user_config += "host=dynamic" + "\n"
     user_config += "username=" + phonenum + "\n"
-    user_config += "secret=" + genuserpass(phonenum) + "\n"
+    user_config += "secret=" + gen_user_pass(phonenum) + "\n"
     user_config += "fullname=" + phonenum + "\n"
     user_config += "callerid=" + username + "\n"
     user_config += "context=" + asterisk_user_context + "\n"
@@ -89,7 +89,7 @@ def asterisk_sip_user_config(phonenum, username):
 def asterisk_pjsip_user_config(phonenum, username):
     """generate sip user config for Asterisk"""
     log_debug("Generating PJSIP config for {} {}".format(phonenum, username))
-    user_pass = genuserpass(phonenum)
+    user_pass = gen_user_pass(phonenum)
     user_config = ";{} <{}> {}".format(phonenum, username, user_pass)
     user_config += "\n"
     user_config += "[{}]".format(phonenum) + "\n"
@@ -136,7 +136,7 @@ def yealink_phone_config(phonetype, phonehwmac, phonenum, username):
         cfgdata += "DisplayName = " + str(phonenum) + "\n"
         cfgdata += "AuthName = " + str(phonenum) + "\n"
         cfgdata += "UserName = " + str(phonenum) + "\n"
-        cfgdata += "password = " + genuserpass(phonenum) + "\n"
+        cfgdata += "password = " + gen_user_pass(phonenum) + "\n"
         cfgdata += "SIPServerHost = " + asterisk_server_address + "\n"
         cfgdata += "SIPServerPort = 5060" + "\n"
         cfgdata += "Transport = 0" + "\n"
@@ -160,7 +160,7 @@ def yealink_phone_config(phonetype, phonehwmac, phonenum, username):
         cfgdata += "DisplayName = " + str(phonenum) + "\n"
         cfgdata += "AuthName = " + str(phonenum) + "\n"
         cfgdata += "UserName = " + str(phonenum) + "\n"
-        cfgdata += "password = " + genuserpass(phonenum) + "\n"
+        cfgdata += "password = " + gen_user_pass(phonenum) + "\n"
         cfgdata += "SIPServerHost = " + asterisk_server_address + "\n"
         cfgdata += "SIPServerPort = 5060" + "\n"
         cfgdata += "Transport = 0" + "\n"
@@ -184,7 +184,7 @@ def yealink_phone_config(phonetype, phonehwmac, phonenum, username):
         cfgdata += "account.1.display_name = " + str(phonenum) + "\n"
         cfgdata += "account.1.auth_name = " + str(phonenum) + "\n"
         cfgdata += "account.1.user_name = " + str(phonenum) + "\n"
-        cfgdata += "account.1.password = " + genuserpass(phonenum) + "\n"
+        cfgdata += "account.1.password = " + gen_user_pass(phonenum) + "\n"
         cfgdata += "account.1.sip_server.1.address = " + \
             asterisk_server_address + "\n"
         cfgdata += "account.1.sip_server.1.port = 5060" + "\n"
@@ -214,13 +214,13 @@ log_debug("LDAP attributes: " + str(ldap_attrs))
 # Connecting to LDAP
 log_debug("Connecting to LDAP server")
 ldap_server = ldap3.Server(
-    str(ldap_host),
+    ldap_host,
     get_info=ldap3.ALL)
 
 connection = ldap3.Connection(
     ldap_server,
-    user=str(search_user_name),
-    password=str(search_user_pw),
+    user=search_user_name,
+    password=search_user_pw,
     authentication=ldap3.NTLM)
 
 connection.bind()
@@ -235,18 +235,20 @@ connection.search(search_base, ldap_filter, attributes=ldap_attrs)
 
 # Processing data
 for entry in connection.entries:
-    log_debug(entry.sn)
-    log_debug(entry.displayName)
-    log_debug(entry.ipPhone)
-    log_debug(entry.employeeID)
+    phone_num = entry.ipPhone
+    log_debug(phone_num)
+    user_name = entry.displayName
+    log_debug(user_name)
+    phone_id = entry.employeeID
+    log_debug(phone_id)
+
     # Generating asterisk config (SIP or/and PJSIP)
     if asterisk_pjsip_enables == "True" or "true":
-        asterisk_pjsip_user_config(entry.ipPhone, entry.displayName)
+        asterisk_pjsip_user_config(phone_num, user_name)
     if asterisk_sip_enables == "True" or "true":
-        asterisk_sip_user_config(entry.ipPhone, entry.displayName)
+        asterisk_sip_user_config(phone_num, user_name)
     # Generating Yelink phone config
     try:
-        phone_id = entry.employeeID
         phone_type = phone_id[:1]
         phone_hwmac = str(phone_id[2:]).lower()
     except:
@@ -258,9 +260,9 @@ for entry in connection.entries:
         yealink_phone_config(
             phone_type,
             phone_hwmac,
-            entry.ipPhone,
-            entry.displayName)
-    log_debug("We are done with {}".format(entry.displayName))
+            phone_num,
+            user_name)
+    log_debug("We are done with {}".format(user_name))
     log_debug(connection.usage)
 log_debug(connection.usage)
 
