@@ -205,11 +205,11 @@ def yealink_phone_config(phonetype, phonehwmac, phonenum, username):
 
 
 # Main body
-log_debug("LDAP host: " + ldap_host)
-log_debug("LDAP search_base: " + search_base)
-log_debug("LDAP search user: " + search_user_name)
-log_debug("LDAP filter: " + ldap_filter)
-log_debug("LDAP attributes: " + str(ldap_attrs))
+log_debug("LDAP host:" + ldap_host)
+log_debug("LDAP search_base:" + search_base)
+log_debug("LDAP search user:" + search_user_name)
+log_debug("LDAP filter:" + ldap_filter)
+log_debug("LDAP attributes:" + str(ldap_attrs))
 
 # Connecting to LDAP
 log_debug("Connecting to LDAP server")
