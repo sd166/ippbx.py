@@ -261,9 +261,15 @@ for entry in connection.entries:
 
     # Generating asterisk config (SIP or/and PJSIP)
     if asterisk_pjsip_enables == "True" or "true":
+        log_debug("PJSIP enabled")
         asterisk_pjsip_user_config(phone_num, user_name)
+    else:
+        log_debug("PJSIP disabled")
     if asterisk_sip_enables == "True" or "true":
+        log_debug("SIP enabled")
         asterisk_sip_user_config(phone_num, user_name)
+    else:
+        log_debug("SIP disabled")
     # Generating Yelink phone config
     try:
         phone_type = phone_id[:1]
