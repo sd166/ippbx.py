@@ -21,7 +21,7 @@ __status__ = "Develompent"
 config = configparser.RawConfigParser()
 config.read('/etc/ippbx.cfg')
 
-debug_enabled = config.get('DEFAULT', 'debug')
+debug_enabled = config.getboolean('DEFAULT', 'debug')
 
 ldap_host = config.get('ldap', 'host')
 search_base = config.get('ldap', 'search_base')
@@ -32,9 +32,10 @@ search_user_pw = config.get('ldap', 'search_user_pw')
 
 asterisk_user_context = config.get('asterisk', 'user_context')
 asterisk_server_address = config.get('asterisk', 'server_address')
-asterisk_pjsip_enables = config.get('asterisk', 'pjsip_enabled')
+asterisk_pjsip_enables = config.getboolean('asterisk', 'pjsip_enabled')
 asterisk_pjsip_conf_dir = config.get('asterisk', 'pjsip_conf_dir')
-asterisk_sip_enables = config.get('asterisk', 'sip_enabled')
+asterisk_pjsip_transport = config.get('asterisk', 'pjsip_transport')
+asterisk_sip_enables = config.getboolean('asterisk', 'sip_enabled')
 asterisk_sip_conf_dir = config.get('asterisk', 'sip_conf_dir')
 asterisk_codecs_allow = config.get('asterisk', 'codecs_allow')
 
@@ -48,7 +49,7 @@ ldap_attrs = ['employeeID', 'ipPhone', 'displayName']
 # Functions
 def log_debug(msg):
     """Debug log"""
-    if debug_enabled == "True" or "true":
+    if debug_enabled:
         print(msg)
 
 
@@ -118,6 +119,7 @@ def asterisk_pjsip_user_config(phonenum, username):
     user_config += "\n"
     user_config += "[{}]\n".format(phonenum)
     user_config += "type=endpoint\n"
+    user_config += "transport={}\n".format(asterisk_pjsip_transport)
     user_config += "context={}\n".format(asterisk_user_context)
     user_config += "disallow=all\n"
     user_config += "allow={}\n".format(asterisk_codecs_allow)
@@ -260,12 +262,12 @@ for entry in connection.entries:
     log_debug(phone_id)
 
     # Generating asterisk config (SIP or/and PJSIP)
-    if asterisk_pjsip_enables == "True" or "true":
+    if asterisk_pjsip_enables:
         log_debug("PJSIP enabled")
         asterisk_pjsip_user_config(phone_num, user_name)
     else:
         log_debug("PJSIP disabled")
-    if asterisk_sip_enables == "True" or "true":
+    if asterisk_sip_enables:
         log_debug("SIP enabled")
         asterisk_sip_user_config(phone_num, user_name)
     else:
