@@ -34,6 +34,7 @@ asterisk_user_context = config.get('asterisk', 'user_context')
 asterisk_server_address = config.get('asterisk', 'server_address')
 asterisk_pjsip_enables = config.getboolean('asterisk', 'pjsip_enabled')
 asterisk_pjsip_conf_dir = config.get('asterisk', 'pjsip_conf_dir')
+asterisk_pjsip_transport = config.get('asterisk', 'pjsip_transport')
 asterisk_sip_enables = config.getboolean('asterisk', 'sip_enabled')
 asterisk_sip_conf_dir = config.get('asterisk', 'sip_conf_dir')
 asterisk_codecs_allow = config.get('asterisk', 'codecs_allow')
@@ -118,6 +119,7 @@ def asterisk_pjsip_user_config(phonenum, username):
     user_config += "\n"
     user_config += "[{}]\n".format(phonenum)
     user_config += "type=endpoint\n"
+    user_config += "transport={}\n".format(asterisk_pjsip_transport)
     user_config += "context={}\n".format(asterisk_user_context)
     user_config += "disallow=all\n"
     user_config += "allow={}\n".format(asterisk_codecs_allow)
