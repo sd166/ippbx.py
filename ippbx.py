@@ -39,6 +39,9 @@ asterisk_sip_enables = config.getboolean('asterisk', 'sip_enabled')
 asterisk_sip_conf_dir = config.get('asterisk', 'sip_conf_dir')
 asterisk_codecs_allow = config.get('asterisk', 'codecs_allow')
 
+yealink_time_zone = config.get('yealink', 'time_zone')
+yealink_summer_time = config.get('yealink', 'summer_time')
+
 tftp_dir = config.get('tftp', 'dir')
 
 phone_num_prefix = config.get('asterisk', 'phone_num_prefix')
@@ -207,6 +210,8 @@ def yealink_phone_config(phonetype, phonehwmac, phonenum, username):
         cfgdata += "account.1.sip_server.1.address = {}\n".format(
             asterisk_server_address)
         cfgdata += "account.1.sip_server.1.port = 5060\n"
+        cfgdata += "local_time.time_zone = {}\n".format(yealink_time_zone)
+        cfgdata += "local_time.summer_time = {}\n".format(yealink_summer_time)
         cfgdata += "\n"
 
         log_debug("Generating phone config: ")
