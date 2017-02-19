@@ -259,12 +259,15 @@ connection.search(search_base, ldap_filter, attributes=ldap_attrs)
 
 # Processing data
 for entry in connection.entries:
-    phone_num = "{}".format(entry.ipPhone)
-    log_debug(phone_num)
-    user_name = "{}".format(entry.displayName)
-    log_debug(user_name)
-    phone_id = "{}".format(entry.employeeID)
-    log_debug(phone_id)
+    try:
+        phone_num = "{}".format(entry.ipPhone)
+        log_debug(phone_num)
+        user_name = "{}".format(entry.displayName)
+        log_debug(user_name)
+        phone_id = "{}".format(entry.employeeID)
+        log_debug(phone_id)
+    except:
+        log_debug("Can't fetch some data")
 
     # Generating asterisk config (SIP or/and PJSIP)
     if asterisk_pjsip_enables:
