@@ -44,9 +44,7 @@ yealink_summer_time = config.get('yealink', 'summer_time')
 
 tftp_dir = config.get('tftp', 'dir')
 
-phone_num_prefix = config.get('asterisk', 'phone_num_prefix')
-ldap_filter = "(&(objectClass=person)(ipPhone=" + phone_num_prefix + "*))"
-ldap_attrs = ['employeeID', 'ipPhone', 'displayName']
+phone_num_prefixes = config.get('asterisk', 'phone_num_prefix').split(",")
 
 
 # Functions
@@ -232,8 +230,7 @@ def yealink_phone_config(phonetype, phonehwmac, phonenum, username):
 log_debug("LDAP host:" + ldap_host)
 log_debug("LDAP search_base:" + search_base)
 log_debug("LDAP search user:" + search_user)
-log_debug("LDAP filter:" + ldap_filter)
-log_debug("LDAP attributes:" + str(ldap_attrs))
+
 
 # Connecting to LDAP
 log_debug("Connecting to LDAP server")
@@ -255,48 +252,53 @@ log_debug(connection.usage)
 
 # Fetching data
 log_debug("Fetching data")
-connection.search(search_base, ldap_filter, attributes=ldap_attrs)
+for phone_num_prefix in phone_num_prefixes:
+    ldap_filter = "(&(objectClass=person)(ipPhone=" + phone_num_prefix + "*))"
+    ldap_attrs = ['employeeID', 'ipPhone', 'displayName']
+    log_debug("LDAP filter:" + ldap_filter)
+    log_debug("LDAP attributes:" + str(ldap_attrs))
+    connection.search(search_base, ldap_filter, attributes=ldap_attrs)
 
-# Processing data
-for entry in connection.entries:
-    try:
-        phone_num = "{}".format(entry.ipPhone)
-        log_debug(phone_num)
-        user_name = "{}".format(entry.displayName)
-        log_debug(user_name)
-        phone_id = "{}".format(entry.employeeID)
-        log_debug(phone_id)
-    except:
-        log_debug("Can't fetch some data")
+    # Processing data
+    for entry in connection.entries:
+        try:
+            phone_num = "{}".format(entry.ipPhone)
+            log_debug(phone_num)
+            user_name = "{}".format(entry.displayName)
+            log_debug(user_name)
+            phone_id = "{}".format(entry.employeeID)
+            log_debug(phone_id)
+        except:
+            log_debug("Can't fetch some data")
 
-    # Generating asterisk config (SIP or/and PJSIP)
-    if asterisk_pjsip_enables:
-        log_debug("PJSIP enabled")
-        asterisk_pjsip_user_config(phone_num, user_name)
-    else:
-        log_debug("PJSIP disabled")
-    if asterisk_sip_enables:
-        log_debug("SIP enabled")
-        asterisk_sip_user_config(phone_num, user_name)
-    else:
-        log_debug("SIP disabled")
-    # Generating Yelink phone config
-    try:
-        phone_type = phone_id[:1]
-        phone_hwmac = phone_id[2:].lower()
-    except:
-        phone_type = None
-        phone_hwmac = None
-        log_debug("Wrong format of employeeID LDAP field")
-    if phone_type:
-        yealink_phone_config(
-            phone_type,
-            phone_hwmac,
-            phone_num,
-            user_name)
-    log_debug("We are done with {}".format(user_name))
+        # Generating asterisk config (SIP or/and PJSIP)
+        if asterisk_pjsip_enables:
+            log_debug("PJSIP enabled")
+            asterisk_pjsip_user_config(phone_num, user_name)
+        else:
+            log_debug("PJSIP disabled")
+        if asterisk_sip_enables:
+            log_debug("SIP enabled")
+            asterisk_sip_user_config(phone_num, user_name)
+        else:
+            log_debug("SIP disabled")
+        # Generating Yelink phone config
+        try:
+            phone_type = phone_id[:1]
+            phone_hwmac = phone_id[2:].lower()
+        except:
+            phone_type = None
+            phone_hwmac = None
+            log_debug("Wrong format of employeeID LDAP field")
+        if phone_type:
+            yealink_phone_config(
+                phone_type,
+                phone_hwmac,
+                phone_num,
+                user_name)
+        log_debug("We are done with {}".format(user_name))
+        log_debug(connection.usage)
     log_debug(connection.usage)
-log_debug(connection.usage)
 
 
 # EOF
