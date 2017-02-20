@@ -120,7 +120,7 @@ def asterisk_pjsip_user_config(phonenum, username):
     user_config += "\n"
     user_config += "[{}]\n".format(phonenum)
     user_config += "type=endpoint\n"
-    user_config += "callerid={} <{777}>\n".format(username, phonenum)
+    user_config += "callerid={} <{}>\n".format(username, phonenum)
     user_config += "transport={}\n".format(asterisk_pjsip_transport)
     user_config += "context={}\n".format(asterisk_user_context)
     user_config += "disallow=all\n"
