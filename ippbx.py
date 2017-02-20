@@ -12,10 +12,10 @@ __copyright__ = "Copyright 2017"
 # __credits__ = ["Denis Gubanov"]
 __license__ = "GPL-3.0"
 __vcs_id__ = '$Id$'
-__version__ = "2.0.0"
+__version__ = "2.0.1"
 __maintainer__ = "Denis Gubanov"
 __email__ = "v12aml@gmail.com"
-__status__ = "Develompent"
+__status__ = "Production"
 
 
 config = configparser.RawConfigParser()
@@ -120,6 +120,7 @@ def asterisk_pjsip_user_config(phonenum, username):
     user_config += "\n"
     user_config += "[{}]\n".format(phonenum)
     user_config += "type=endpoint\n"
+    user_config += "callerid={} <{}>\n".format(username, phonenum)
     user_config += "transport={}\n".format(asterisk_pjsip_transport)
     user_config += "context={}\n".format(asterisk_user_context)
     user_config += "disallow=all\n"
