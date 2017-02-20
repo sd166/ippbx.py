@@ -12,10 +12,10 @@ __copyright__ = "Copyright 2017"
 # __credits__ = ["Denis Gubanov"]
 __license__ = "GPL-3.0"
 __vcs_id__ = '$Id$'
-__version__ = "2.0.0"
+__version__ = "2.0.1"
 __maintainer__ = "Denis Gubanov"
 __email__ = "v12aml@gmail.com"
-__status__ = "Develompent"
+__status__ = "Production"
 
 
 config = configparser.RawConfigParser()
