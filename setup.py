@@ -10,7 +10,7 @@ if sys.version_info[0] < 3:
 
 setup(
     name='ippbx',
-    version='2.0.3,
+    version='2.0.3',
     py_modules=['ippbx'],
 )
 
