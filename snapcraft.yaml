@@ -7,8 +7,8 @@ grade: stable
 confinement: classic
 
 apps:
-  asciinema:
-    command: asciinema
+  ippbx.py:
+    command: ippbx.py
 
 parts:
   asciinema:
