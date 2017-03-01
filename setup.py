@@ -2,7 +2,6 @@
 # -*- coding: utf-8 -*-
 
 import sys
-import ippbx
 from distutils.core import setup
 
 
@@ -11,7 +10,9 @@ if sys.version_info[0] < 3:
 
 setup(
     name='ippbx',
-    version=ippbx.__version__,
+    version='2.0.3',
+    author='Denis Gubanov',
+    author_email='v12aml@gmail.com',
     py_modules=['ippbx'],
 )
 
