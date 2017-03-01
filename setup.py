@@ -11,6 +11,8 @@ if sys.version_info[0] < 3:
 setup(
     name='ippbx',
     version='2.0.3',
+    author='Denis Gubanov',
+    author_email='v12aml@gmail.com',
     py_modules=['ippbx'],
 )
 
