@@ -13,7 +13,7 @@ setup(
     name='ippbx',
     version=ippbx.__version__,
     py_modules=['ippbx'],
-    )
+)
 
 
 # EOF
