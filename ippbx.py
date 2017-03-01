@@ -12,7 +12,7 @@ __copyright__ = "Copyright 2017"
 # __credits__ = ["Denis Gubanov"]
 __license__ = "GPL-3.0"
 __vcs_id__ = '$Id$'
-__version__ = "2.0.1"
+__version__ = "2.0.3"
 __maintainer__ = "Denis Gubanov"
 __email__ = "v12aml@gmail.com"
 __status__ = "Production"
@@ -300,6 +300,10 @@ for phone_num_prefix in phone_num_prefixes:
         log_debug("We are done with {}".format(user_name))
         log_debug(connection.usage)
     log_debug(connection.usage)
+
+print("All done")
+print("Now you should reload asterisk configuration:")
+print("\tsystemctl reload asterisk.service")
 
 
 # EOF
