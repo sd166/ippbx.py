@@ -301,5 +301,9 @@ for phone_num_prefix in phone_num_prefixes:
         log_debug(connection.usage)
     log_debug(connection.usage)
 
+print("All done")
+print("Now you should reload asterisk configuration:")
+print("\tsystemctl reload asterisk.service")
+
 
 # EOF
