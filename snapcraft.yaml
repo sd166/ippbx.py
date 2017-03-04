@@ -11,7 +11,7 @@ apps:
     command: ippbxpy
 
 parts:
-  asciinema:
+  ippbxpy:
     source: https://github.com/v12aml/ippbx.py.git
     plugin: python
     python-version: 'python3'
