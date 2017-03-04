@@ -4,7 +4,7 @@
 import sys
 import os.path
 from setuptools import setup, find_packages
-import ippbxpy
+# import ippbxpy
 
 
 if sys.version_info[0] < 3:
@@ -17,7 +17,8 @@ def read(fname):
 
 setup(
     name='ippbxpy',
-    version=ippbxpy.__version__,
+    # version=ippbxpy.__version__,
+    version='2.0.3',
     author='Denis Gubanov',
     author_email='v12aml@gmail.com',
     packages=find_packages(exclude=['tests']),

@@ -15,3 +15,5 @@ parts:
     source: https://github.com/v12aml/ippbx.py.git
     plugin: python
     python-version: 'python3'
+    python-packages:
+      - ldap3
