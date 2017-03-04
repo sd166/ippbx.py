@@ -1,4 +1,4 @@
-name: ippbx.py
+name: ippbxpy
 version: 'latest'
 summary: Script for asterisk and Yealink configuration
 description: TBD
@@ -7,8 +7,8 @@ grade: stable
 confinement: classic
 
 apps:
-  ippbx.py:
-    command: ippbx.py
+  ippbxpy:
+    command: ippbxpy
 
 parts:
   asciinema:
