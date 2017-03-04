@@ -20,7 +20,6 @@ setup(
     version=ippbxpy.__version__,
     author='Denis Gubanov',
     author_email='v12aml@gmail.com',
-    py_modules=['ippbxpy'],
     packages=find_packages(exclude=['tests']),
     long_description=read('README.md'),
     scripts=['bin/ippbxpy'],
