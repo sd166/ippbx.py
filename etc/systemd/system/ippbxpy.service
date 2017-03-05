@@ -1,0 +1,6 @@
+[Unit]
+Description=Config generator for Asterisk and Yealink VoIP phones
+
+
+[Service]
+ExecStart=/usr/local/bin/ippbx.py

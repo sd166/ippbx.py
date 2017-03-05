@@ -1,0 +1,10 @@
+[Init]
+Description=Timer for ippbxpy
+
+
+[Timer]
+RandomizedDelaySec=3500
+OnCalendar=hourly
+
+[Install]
+WantedBy=timers.target
