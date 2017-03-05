@@ -5,6 +5,7 @@ import configparser
 import ldap3
 import sys
 import crypt
+from subprocess import call
 
 
 __author__ = "Denis Gubanov"
@@ -304,8 +305,9 @@ def main():
         log_debug(connection.usage)
 
     print("All done")
-    print("Now you should reload asterisk configuration:")
-    print("\tsystemctl reload asterisk.service")
+    # print("Now you should reload asterisk configuration:")
+    # print("\tsystemctl reload asterisk.service")
+    call(["systemctl", "reload asterisk.service"])
 
 
 # EOF
