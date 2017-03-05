@@ -253,11 +253,8 @@ def main():
 
     # Fetching data
     log_debug("Fetching data")
-    for phone_num_prefix in phone_num_prefixes:
-        ldap_filter = """(&
-            (objectClass=person)
-            (ipPhone=" + phone_num_prefix + "*)
-            )"""
+    for phone_prefix in phone_num_prefixes:
+        ldap_filter = "(&(objectClass=person)(ipPhone=" + phone_prefix + "*))"
         ldap_attrs = ['employeeID', 'ipPhone', 'displayName']
         log_debug("LDAP filter:" + ldap_filter)
         log_debug("LDAP attributes:" + str(ldap_attrs))
@@ -311,7 +308,7 @@ if __name__ == "__main__":
     print("All done")
     # print("Now you should reload asterisk configuration:")
     # print("\tsystemctl reload asterisk.service")
-    call(["systemctl", "reload asterisk.service"])
+    call(["systemctl", "reload", "asterisk.service"])
 
 
 # EOF
