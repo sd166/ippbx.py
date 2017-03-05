@@ -4,7 +4,7 @@ summary: Script for asterisk and Yealink configuration
 description: TBD
 
 grade: stable
-confinement: classic
+confinement: devmode
 
 apps:
   ippbxpy:
