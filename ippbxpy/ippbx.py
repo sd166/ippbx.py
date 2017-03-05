@@ -304,6 +304,10 @@ def main():
             log_debug(connection.usage)
         log_debug(connection.usage)
 
+
+if __name__ == "__main__":
+    # execute only if run as a script
+    main()
     print("All done")
     # print("Now you should reload asterisk configuration:")
     # print("\tsystemctl reload asterisk.service")
