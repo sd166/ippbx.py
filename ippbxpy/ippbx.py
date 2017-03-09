@@ -5,6 +5,7 @@ import configparser
 import ldap3
 import sys
 import crypt
+import hashlib
 from subprocess import call
 
 
@@ -62,7 +63,7 @@ def gen_user_pass(phonenum):
     return crypt.crypt(str(phonenum), salt=salt)
 
 
-def asterisk_sip_user_config(phonenum, username):
+def asterisk_sip_user_config(phonenum, username, pickupgroup):
     """generate sip user config for Asterisk"""
     log_debug("called func asterisk_sip_user_config({}, {})".format(
         phonenum,
@@ -89,6 +90,8 @@ def asterisk_sip_user_config(phonenum, username):
     user_config += "hasiax=no\n"
     user_config += "hash323=no\n"
     user_config += "hasmanager=no\n"
+    user_config += "namedcallgroup={}\n".format(pickupgroup)
+    user_config += "namedpickupgroup={}\n".format(pickupgroup)
     user_config += "\n"
     cfg_file_name = "{}/user{}.conf".format(asterisk_sip_conf_dir, phonenum)
     with open(cfg_file_name, 'w') as f:
@@ -97,7 +100,7 @@ def asterisk_sip_user_config(phonenum, username):
     log_debug(user_config)
 
 
-def asterisk_pjsip_user_config(phonenum, username):
+def asterisk_pjsip_user_config(phonenum, username, pickupgroup):
     """generate sip user config for Asterisk"""
     log_debug("called func asterisk_pjsip_user_config({}, {})".format(
         phonenum,
@@ -132,6 +135,8 @@ def asterisk_pjsip_user_config(phonenum, username):
     user_config += "rtp_ipv6=yes\n"
     user_config += "rewrite_contact=yes\n"
     user_config += "send_rpid=yes\n"
+    user_config += "named_call_group={}\n".format(pickupgroup)
+    user_config += "named_pickup_group={}\n".format(pickupgroup)
     user_config += "\n"
     cfg_file_name = "{}/user{}.conf".format(asterisk_pjsip_conf_dir, phonenum)
     with open(cfg_file_name, 'w') as f:
@@ -255,7 +260,7 @@ def main():
     log_debug("Fetching data")
     for phone_prefix in phone_num_prefixes:
         ldap_filter = "(&(objectClass=person)(ipPhone=" + phone_prefix + "*))"
-        ldap_attrs = ['employeeID', 'ipPhone', 'displayName']
+        ldap_attrs = ['employeeID', 'ipPhone', 'displayName', 'canonicalName']
         log_debug("LDAP filter:" + ldap_filter)
         log_debug("LDAP attributes:" + str(ldap_attrs))
         connection.search(search_base, ldap_filter, attributes=ldap_attrs)
@@ -269,18 +274,21 @@ def main():
                 log_debug(user_name)
                 phone_id = "{}".format(entry.employeeID)
                 log_debug(phone_id)
+                user_can_name = "{}".format(entry.canonicalName)
+                user_ou = '/'.join(user_can_name.split('/')[0:-1])
+                pickupgroup = hashlib.md5(user_ou.encode('utf-8')).hexdigest()
             except:
                 log_debug("Can't fetch some data")
 
             # Generating asterisk config (SIP or/and PJSIP)
             if asterisk_pjsip_enables:
                 log_debug("PJSIP enabled")
-                asterisk_pjsip_user_config(phone_num, user_name)
+                asterisk_pjsip_user_config(phone_num, user_name, pickupgroup)
             else:
                 log_debug("PJSIP disabled")
             if asterisk_sip_enables:
                 log_debug("SIP enabled")
-                asterisk_sip_user_config(phone_num, user_name)
+                asterisk_sip_user_config(phone_num, user_name, pickupgroup)
             else:
                 log_debug("SIP disabled")
             # Generating Yelink phone config
