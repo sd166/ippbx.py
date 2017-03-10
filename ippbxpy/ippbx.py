@@ -7,6 +7,10 @@ import crypt
 import hashlib
 from subprocess import call
 
+from ippbxpy.confgens import asterisk_pjsip_user_config
+from ippbxpy.confgens import asterisk_sip_user_config
+from ippbxpy.confgens import yealink_phone_config
+
 
 __author__ = "Denis Gubanov"
 __copyright__ = "Copyright 2017"

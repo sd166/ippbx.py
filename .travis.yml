@@ -11,6 +11,7 @@ install:
 
 script:
   - find . -name \*.py -exec pep8 --ignore=E402 {} +
+  - python3 -m unittest tests/configs.py
 
 notifications:
   irc:
