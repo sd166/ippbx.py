@@ -115,7 +115,7 @@ namedpickupgroup=p1
             phonenum,
             username,
             userpass)
-            """
+        """
         r1 = """[ account ]
 path = /config/voip/sipAccount0.cfg
 Enable = 1

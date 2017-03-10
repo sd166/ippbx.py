@@ -89,12 +89,7 @@ def asterisk_sip_user_config(cfg, phonenum, username, userpass, pickupgroup):
 
 
 def yealink_phone_config(
-                        cfg,
-                        phonetype,
-                        phonehwmac,
-                        phonenum,
-                        username,
-                        userpass):
+        cfg, phonetype, phonehwmac, phonenum, username, userpass):
     """generate and write phone cfg file"""
     log_debug(cfg, "called func yealink_phone_config({}, {}, {}, {})".format(
         phonetype,
