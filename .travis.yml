@@ -4,12 +4,14 @@ python:
   - "3.5"
 
 before_install:
-    - pip install pep8
+  - pip install pep8
 
-install: "pip install -r requirements.txt"
+install:
+  - pip install -r requirements.txt
 
 script:
   - find . -name \*.py -exec pep8 --ignore=E402 {} +
+  - python3 -m unittest tests/configs.py
 
 notifications:
   irc:
