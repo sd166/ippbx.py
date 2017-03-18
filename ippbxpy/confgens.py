@@ -49,6 +49,8 @@ def asterisk_pjsip_user_config(cfg, phonenum, username, userpass, pickupgroup):
     user_config += "send_rpid=yes\n"
     user_config += "named_call_group={}\n".format(pickupgroup)
     user_config += "named_pickup_group={}\n".format(pickupgroup)
+    user_config += "tos_audio=ef\n"
+    user_config += "cos_audio=5\n"
     user_config += "\n"
     log_debug(cfg, user_config)
     return user_config
@@ -96,8 +98,13 @@ def yealink_phone_config(
         phonehwmac,
         phonenum,
         username))
-    if phonetype == "1":
+    # vars
+    qos_rtptos = 46
+    qos_signaltos = 26
+    # CFG
+    if phonetype == "1" or phonetype == "2":
         cfgdata = ""
+        # Account section
         cfgdata += "[ account ]\n"
         cfgdata += "path = /config/voip/sipAccount0.cfg\n"
         cfgdata += "Enable = 1\n"
@@ -111,26 +118,37 @@ def yealink_phone_config(
         cfgdata += "SIPServerPort = 5060\n"
         cfgdata += "Transport = 0\n"
         cfgdata += "\n"
-        log_debug(cfg, "Generating phone config: ")
-        log_debug(cfg, "phonetype: " + phonetype)
-        log_debug(cfg, "phonehwmac: " + phonehwmac)
-        log_debug(cfg, "phonenum: " + phonenum)
-        log_debug(cfg, "username: " + username)
-    elif phonetype == "2":
-        cfgdata = ""
-        cfgdata += "[ account ]\n"
-        cfgdata += "path = /config/voip/sipAccount0.cfg\n"
-        cfgdata += "Enable = 1\n"
-        cfgdata += "Label = " + str(phonenum) + " - " + str(username) + "\n"
-        cfgdata += "DisplayName = " + str(phonenum) + "\n"
-        cfgdata += "AuthName = " + str(phonenum) + "\n"
-        cfgdata += "UserName = " + str(phonenum) + "\n"
-        cfgdata += "password = " + userpass + "\n"
-        cfgdata += "SIPServerHost = {}\n".format(
-            cfg.get('asterisk', 'server_address'))
-        cfgdata += "SIPServerPort = 5060\n"
-        cfgdata += "Transport = 0\n"
+        # Local Time section
+        cfgdata += "[ LocalTime ]\n"
+        cfgdata += "path = /config/Network/Network.cfg\n"
+        cfgdata += "local_time.time_zone = {}\n".format(
+            cfg.get('yealink', 'time_zone'))
+        cfgdata += "local_time.summer_time = {}\n".format(
+            cfg.get('yealink', 'summer_time'))
         cfgdata += "\n"
+        # Network section
+        cfgdata += "[ Network ]\n"
+        cfgdata += "path = /config/Network/Network.cfg\n"
+        cfgdata += "eWANType = 2\n"
+        cfgdata += "\n"
+        # LLDP section
+        cfgdata += "[ LLDP ]\n"
+        cfgdata += "path = /config/Network/Network.cfg\n"
+        cfgdata += "EnableLLDP = 1\n"
+        cfgdata += "\n"
+        # QOS section
+        cfgdata += "[ QOS ]\n"
+        cfgdata += "path = /config/Network/Network.cfg\n"
+        cfgdata += "RTPTOS = {}\n".format(qos_rtptos)
+        cfgdata += "SIGNALTOS = {}\n".format(qos_signaltos)
+        cfgdata += "\n"
+        # Security section
+        cfgdata += "[ AdminPassword ]\n"
+        cfgdata += "path = /config/Setting/autop.cfg\n"
+        cfgdata += "password = {}\n".format(
+            cfg.get('yealink', 'admin_pass'))
+        cfgdata += "\n"
+        # End of config
         log_debug(cfg, "Generating phone config: ")
         log_debug(cfg, "phonetype: " + phonetype)
         log_debug(cfg, "phonehwmac: " + phonehwmac)
@@ -138,6 +156,7 @@ def yealink_phone_config(
         log_debug(cfg, "username: " + username)
     elif phonetype == "5":
         cfgdata = "#!version:1.0.0.1\n"
+        # Account section
         cfgdata += "account.1.enable = 1\n"
         cfgdata += "account.1.label = {}-{}\n".format(
             str(phonenum),
@@ -149,11 +168,28 @@ def yealink_phone_config(
         cfgdata += "account.1.sip_server.1.address = {}\n".format(
             cfg.get('asterisk', 'server_address'))
         cfgdata += "account.1.sip_server.1.port = 5060\n"
+        cfgdata += "\n"
+        # Local Time section
         cfgdata += "local_time.time_zone = {}\n".format(
             cfg.get('yealink', 'time_zone'))
         cfgdata += "local_time.summer_time = {}\n".format(
             cfg.get('yealink', 'summer_time'))
         cfgdata += "\n"
+        # Network section
+        cfgdata += "network.ip_address_mode = 2\n"
+        cfgdata += "\n"
+        # LLDP section
+        cfgdata += "network.lldp.enable = 1\n"
+        cfgdata += "\n"
+        # QOS section
+        cfgdata += "network.qos.rtptos = {}\n".format(qos_rtptos)
+        cfgdata += "network.qos.signaltos = {}\n".format(qos_signaltos)
+        cfgdata += "\n"
+        # Security section
+        cfgdata += "security.user_password = {}\n".format(
+            cfg.get('yealink', 'admin_pass'))
+        cfgdata += "\n"
+        # End of config
         log_debug(cfg, "Generating phone config: ")
         log_debug(cfg, "phonetype: " + phonetype)
         log_debug(cfg, "phonehwmac: " + phonehwmac)
