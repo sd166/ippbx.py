@@ -176,10 +176,10 @@ def yealink_phone_config(
             cfg.get('yealink', 'summer_time'))
         cfgdata += "\n"
         # Network section
-        cfgdata += "network.ip_address_mode = 2\n'
+        cfgdata += "network.ip_address_mode = 2\n"
         cfgdata += "\n"
         # LLDP section
-        cfgdata += "network.lldp.enable = 1\n'
+        cfgdata += "network.lldp.enable = 1\n"
         cfgdata += "\n"
         # QOS section
         cfgdata += "network.qos.rtptos = {}\n".format(qos_rtptos)
