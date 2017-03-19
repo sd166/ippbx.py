@@ -13,7 +13,8 @@ def log_debug(cfg, msg):
 
 def asterisk_pjsip_user_config(cfg, phonenum, username, userpass, pickupgroup):
     """generate sip user config for Asterisk"""
-    log_debug(cfg,
+    log_debug(
+        cfg,
         "called func asterisk_pjsip_user_config({}, {}, {}, {}, {})".format(
             "cfg",
             phonenum,
