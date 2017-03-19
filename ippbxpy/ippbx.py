@@ -32,7 +32,7 @@ def log_debug(cfg, msg):
 
 def gen_user_pass(cfg, phonenum):
     """generate simple user password"""
-    log_debug(cfg, "called func gen_user_pass({}, {})".format(cfg, phonenum))
+    log_debug(cfg, "called func gen_user_pass({}, {})".format("cfg", phonenum))
     salt = cfg.get('user', 'pass_salt')
     return crypt.crypt(str(phonenum), salt=salt)
 
@@ -103,6 +103,7 @@ def main():
                     log_debug(cfg, cfg_file_name)
                     with open(cfg_file_name, 'w') as f:
                         user_config = asterisk_pjsip_user_config(
+                            cfg,
                             phone_num,
                             user_name,
                             user_pass,
@@ -118,6 +119,7 @@ def main():
                     log_debug(cfg, cfg_file_name)
                     with open(cfg_file_name, 'w') as f:
                         user_config = asterisk_sip_user_config(
+                            cfg,
                             phone_num,
                             user_name,
                             user_pass,
@@ -139,6 +141,7 @@ def main():
                     with open(cfg.get(
                             'tftp', 'dir') + cfg_file_name, 'w') as f:
                         cfgdata = yealink_phone_config(
+                            cfg,
                             phone_type,
                             phone_hwmac,
                             phone_num,
