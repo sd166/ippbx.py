@@ -32,7 +32,7 @@ def log_debug(cfg, msg):
 
 def gen_user_pass(cfg, phonenum):
     """generate simple user password"""
-    log_debug(cfg, "called func gen_user_pass({})".format(phonenum))
+    log_debug(cfg, "called func gen_user_pass({}, {})".format(cfg, phonenum))
     salt = cfg.get('user', 'pass_salt')
     return crypt.crypt(str(phonenum), salt=salt)
 
@@ -94,7 +94,7 @@ def main():
                 log_debug(cfg, "Can't fetch some data")
 
             # Generating asterisk config (SIP or/and PJSIP)
-            user_pass = gen_user_pass(phone_num)
+            user_pass = gen_user_pass(cfg, phone_num)
             if cfg.getboolean('asterisk', 'pjsip_enabled'):
                 log_debug(cfg, "PJSIP enabled")
                 cfg_file_name = "{}/user{}.conf".format(
