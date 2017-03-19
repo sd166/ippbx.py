@@ -134,8 +134,8 @@ def main():
                 if phone_type:
                     cfg_file_name = phone_hwmac + ".cfg"
                     log_debug(cfg, cfg_file_name)
-                    with open(cfg.get('tftp', 'dir') + cfg_file_name, 'w')
-                            as f:
+                    with open(cfg.get(
+                            'tftp', 'dir') + cfg_file_name, 'w') as f:
                         cfgdata = yealink_phone_config(
                             phone_type,
                             phone_hwmac,
