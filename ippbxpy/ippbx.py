@@ -90,6 +90,8 @@ def main():
                 user_can_name = "{}".format(entry.canonicalName)
                 user_ou = '/'.join(user_can_name.split('/')[0:-1])
                 pickupgroup = hashlib.md5(user_ou.encode('utf-8')).hexdigest()
+                log_debug(cfg, "Pickupgroup: {} {}".format(
+                    user_ou, pickupgroup))
 
                 # Generating asterisk config (SIP or/and PJSIP)
                 user_pass = gen_user_pass(cfg, phone_num)
@@ -145,8 +147,8 @@ def main():
                         f.write(cfgdata)
                 log_debug(cfg, "We are done with {}".format(user_name))
                 log_debug(cfg, connection.usage)
-            except:
-                log_debug(cfg, "Can't fetch some data")
+            except Exception as e:
+                log_debug(cfg, "Can't fetch some data: {}".format(e))
         log_debug(cfg, connection.usage)
 
 
