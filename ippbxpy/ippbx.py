@@ -17,7 +17,7 @@ __copyright__ = "Copyright 2017"
 # __credits__ = ["Denis Gubanov"]
 __license__ = "GPL-3.0"
 __vcs_id__ = '$Id$'
-__version__ = "2.1.1"
+__version__ = "2.1.2"
 __maintainer__ = "Denis Gubanov"
 __email__ = "v12aml@gmail.com"
 __status__ = "Production"
@@ -90,62 +90,63 @@ def main():
                 user_can_name = "{}".format(entry.canonicalName)
                 user_ou = '/'.join(user_can_name.split('/')[0:-1])
                 pickupgroup = hashlib.md5(user_ou.encode('utf-8')).hexdigest()
+
+                # Generating asterisk config (SIP or/and PJSIP)
+                user_pass = gen_user_pass(cfg, phone_num)
+                if cfg.getboolean('asterisk', 'pjsip_enabled'):
+                    log_debug(cfg, "PJSIP enabled")
+                    cfg_file_name = "{}/user{}.conf".format(
+                        cfg.get('asterisk', 'pjsip_conf_dir'),
+                        phone_num)
+                    log_debug(cfg, cfg_file_name)
+                    with open(cfg_file_name, 'w') as f:
+                        user_config = asterisk_pjsip_user_config(
+                            phone_num,
+                            user_name,
+                            user_pass,
+                            pickupgroup)
+                        f.write(user_config)
+                else:
+                    log_debug(cfg, "PJSIP disabled")
+                if cfg.getboolean('asterisk', 'sip_enabled'):
+                    log_debug(cfg, "SIP enabled")
+                    cfg_file_name = "{}/user{}.conf".format(
+                        cfg.get('asterisk', 'sip_conf_dir'),
+                        phone_num)
+                    log_debug(cfg, cfg_file_name)
+                    with open(cfg_file_name, 'w') as f:
+                        user_config = asterisk_sip_user_config(
+                            phone_num,
+                            user_name,
+                            user_pass,
+                            pickupgroup)
+                        f.write(user_config)
+                else:
+                    log_debug(cfg, "SIP disabled")
+                # Generating Yelink phone config
+                try:
+                    phone_type = phone_id[:1]
+                    phone_hwmac = phone_id[2:].lower()
+                except:
+                    phone_type = None
+                    phone_hwmac = None
+                    log_debug(cfg, "Wrong format of employeeID LDAP field")
+                if phone_type:
+                    cfg_file_name = phone_hwmac + ".cfg"
+                    log_debug(cfg, cfg_file_name)
+                    with open(cfg.get(
+                            'tftp', 'dir') + cfg_file_name, 'w') as f:
+                        cfgdata = yealink_phone_config(
+                            phone_type,
+                            phone_hwmac,
+                            phone_num,
+                            user_name,
+                            user_pass)
+                        f.write(cfgdata)
+                log_debug(cfg, "We are done with {}".format(user_name))
+                log_debug(cfg, connection.usage)
             except:
                 log_debug(cfg, "Can't fetch some data")
-
-            # Generating asterisk config (SIP or/and PJSIP)
-            user_pass = gen_user_pass(cfg, phone_num)
-            if cfg.getboolean('asterisk', 'pjsip_enabled'):
-                log_debug(cfg, "PJSIP enabled")
-                cfg_file_name = "{}/user{}.conf".format(
-                    cfg.get('asterisk', 'pjsip_conf_dir'),
-                    phone_num)
-                log_debug(cfg, cfg_file_name)
-                with open(cfg_file_name, 'w') as f:
-                    user_config = asterisk_pjsip_user_config(
-                        phone_num,
-                        user_name,
-                        user_pass,
-                        pickupgroup)
-                    f.write(user_config)
-            else:
-                log_debug(cfg, "PJSIP disabled")
-            if cfg.getboolean('asterisk', 'sip_enabled'):
-                log_debug(cfg, "SIP enabled")
-                cfg_file_name = "{}/user{}.conf".format(
-                    cfg.get('asterisk', 'sip_conf_dir'),
-                    phone_num)
-                log_debug(cfg, cfg_file_name)
-                with open(cfg_file_name, 'w') as f:
-                    user_config = asterisk_sip_user_config(
-                        phone_num,
-                        user_name,
-                        user_pass,
-                        pickupgroup)
-                    f.write(user_config)
-            else:
-                log_debug(cfg, "SIP disabled")
-            # Generating Yelink phone config
-            try:
-                phone_type = phone_id[:1]
-                phone_hwmac = phone_id[2:].lower()
-            except:
-                phone_type = None
-                phone_hwmac = None
-                log_debug(cfg, "Wrong format of employeeID LDAP field")
-            if phone_type:
-                cfg_file_name = phone_hwmac + ".cfg"
-                log_debug(cfg, cfg_file_name)
-                with open(cfg.get('tftp', 'dir') + cfg_file_name, 'w') as f:
-                    cfgdata = yealink_phone_config(
-                        phone_type,
-                        phone_hwmac,
-                        phone_num,
-                        user_name,
-                        user_pass)
-                    f.write(cfgdata)
-            log_debug(cfg, "We are done with {}".format(user_name))
-            log_debug(cfg, connection.usage)
         log_debug(cfg, connection.usage)
 
 
