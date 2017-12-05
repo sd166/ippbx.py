@@ -35,3 +35,4 @@ dir = /srv/tftp/
 [yealink]
 time_zone = +3
 summer_time = 0
+admin_pass = ADMIN_PASSWORD
