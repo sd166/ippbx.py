@@ -21,9 +21,15 @@ setup(
     version='2.0.3',
     author='Denis Gubanov',
     author_email='v12aml@gmail.com',
-    packages=find_packages(exclude=['tests']),
+    # packages=find_packages(exclude=['tests']),
+    packages=["ippbxpy"],
     long_description=read('README.md'),
     scripts=['bin/ippbxpy'],
+    entry_points={
+        "console_scripts": [
+            "ippbxpy = ippbxpy.ippbx:main",
+        ],
+     },
 )
 
 
