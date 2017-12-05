@@ -24,7 +24,6 @@ setup(
     # packages=find_packages(exclude=['tests']),
     packages=["ippbxpy"],
     long_description=read('README.md'),
-    scripts=['bin/ippbxpy'],
     entry_points={
         "console_scripts": [
             "ippbxpy = ippbxpy.ippbx:main",
